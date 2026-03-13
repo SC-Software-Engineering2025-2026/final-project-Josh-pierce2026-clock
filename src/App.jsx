@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ScheduleTimer from "./components/ScheduleTimer";
 import ManualTimer from "./components/ManualTimer";
-import ClockView from "./components/ClockView";
 import { buildDaySchedule } from "./utils/schedule";
 import ClassEditor from "./components/ClassEditor";
 
@@ -9,6 +8,7 @@ export default function App() {
   const [modeView, setModeView] = useState("schedule"); // schedule | manual
   const [selectedDay, setSelectedDay] = useState(1);
   const [scheduleMode, setScheduleMode] = useState("standard"); // standard | monday | wednesday
+  const [lunchMode, setLunchMode] = useState("lunch2"); // lunch1 | lunch2
   const [syncToClock, setSyncToClock] = useState(true);
   const [now, setNow] = useState(new Date());
   const [inSession, setInSession] = useState(true);
@@ -158,7 +158,7 @@ export default function App() {
 
   // compute whether current time falls into the day's schedule window
   useEffect(() => {
-    const periods = buildDaySchedule(selectedDay, scheduleMode);
+    const periods = buildDaySchedule(selectedDay, scheduleMode, lunchMode);
     if (!periods || periods.length === 0) {
       setInSession(false);
       setSyncToClock(false);
@@ -166,11 +166,18 @@ export default function App() {
     }
     const firstStart = periods[0].start;
     const lastEnd = periods[periods.length - 1].end;
-    const nowIn = now >= firstStart && now < lastEnd;
+    // Treat the entire calendar day of the schedule as "in session"
+    // so the clock can start before school (from midnight onward) and
+    // extend slightly after the last block for the after-school window.
+    const dayStart = new Date(firstStart);
+    dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(firstStart);
+    dayEnd.setHours(15, 15, 0, 0); // 3:15 PM
+    const nowIn = now >= dayStart && now < dayEnd;
     setInSession(nowIn);
     // don't allow enabling sync outside of school hours; if outside, force it off
     if (!nowIn && syncToClock) setSyncToClock(false);
-  }, [now, selectedDay, scheduleMode]);
+  }, [now, selectedDay, scheduleMode, lunchMode]);
 
   // when synced to device time, auto-select monday/wednesday/standard based on weekday
   useEffect(() => {
@@ -187,7 +194,7 @@ export default function App() {
     if (!toast.visible) return;
     const t = setTimeout(
       () => setToast((s) => ({ ...s, visible: false })),
-      2800
+      2800,
     );
     return () => clearTimeout(t);
   }, [toast.visible]);
@@ -240,6 +247,7 @@ export default function App() {
                 syncToClock={syncToClock}
                 onPeriodEnd={handlePeriodEnd}
                 classMap={classMap}
+                lunchMode={lunchMode}
                 showList={!scheduleCollapsed}
               />
             )}
@@ -357,6 +365,35 @@ export default function App() {
               </div>
 
               <div style={{ marginTop: 12 }}>
+                <div className="muted">Lunch</div>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 8,
+                    marginTop: 8,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <button
+                    className={
+                      "mode-btn" + (lunchMode === "lunch1" ? " active" : "")
+                    }
+                    onClick={() => setLunchMode("lunch1")}
+                  >
+                    Lunch 1
+                  </button>
+                  <button
+                    className={
+                      "mode-btn" + (lunchMode === "lunch2" ? " active" : "")
+                    }
+                    onClick={() => setLunchMode("lunch2")}
+                  >
+                    Lunch 2
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ marginTop: 12 }}>
                 <div
                   style={{
                     display: "flex",
@@ -461,11 +498,6 @@ export default function App() {
               </div>
             </div>
           )}
-
-          <div style={{ marginTop: 18 }}>
-            {/* persistent clock at bottom */}
-            <ClockView />
-          </div>
         </div>
       </div>
 

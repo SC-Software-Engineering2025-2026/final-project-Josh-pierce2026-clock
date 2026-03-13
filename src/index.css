@@ -14,7 +14,12 @@ body,
   margin: 0;
 }
 body {
-  font-family: Inter, system-ui, Segoe UI, Roboto, Arial;
+  font-family:
+    Inter,
+    system-ui,
+    Segoe UI,
+    Roboto,
+    Arial;
   background: linear-gradient(180deg, #071029, #0b1220);
   color: #e6eef7;
 }
@@ -88,15 +93,23 @@ body,
   margin: 0;
 }
 body {
-  font-family: Inter, system-ui, Segoe UI, Roboto, Arial;
+  font-family:
+    Inter,
+    system-ui,
+    Segoe UI,
+    Roboto,
+    Arial;
   background: linear-gradient(180deg, #ffffff, #f1f5f9);
   color: var(--text);
+  /* prevent horizontal scrolling; layout below is sized to fit */
+  overflow-x: hidden;
 }
 .app {
   display: flex;
   gap: 20px;
   padding: 20px;
   max-width: 1100px;
+  width: 100%;
   margin: 0 auto;
 }
 .sidebar {
@@ -180,7 +193,7 @@ body {
 }
 .timer {
   /* make the timer very large and responsive so it takes up most of the view */
-  font-size: clamp(64px, 16vw, 420px);
+  font-size: clamp(64px, 15vw, 420px);
   font-weight: 900;
   margin: 6px 0;
   letter-spacing: 1px;
@@ -234,7 +247,7 @@ body {
 /* make the timer the visual focus on larger viewports */
 @media (max-width: 900px) {
   .timer {
-    font-size: 64px;
+    font-size: 56px;
   }
 }
 @media (max-width: 480px) {
@@ -243,11 +256,23 @@ body {
   }
 }
 
+/* On smaller screens, stack sidebar and main vertically so everything fits */
+@media (max-width: 900px) {
+  .app {
+    flex-direction: column;
+    max-width: 100%;
+  }
+  .sidebar {
+    width: 100%;
+  }
+}
+
 /* Stable numeric layout for timers and clocks: use monospace and fixed character width
    so digits don't shift when the number of characters changes. */
 .timer,
 .clock-value {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono",
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono",
     "Liberation Mono", monospace;
   /* reserve space for HH:MM:SS (8 characters) so width doesn't change */
   display: inline-block;
