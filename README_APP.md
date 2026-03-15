@@ -7,7 +7,7 @@ This file documents the Sierra Schedule timer application specifically (the purp
 The app is a lightweight React 18 + Vite single-page app that:
 
 - Models an 8-day rotation schedule and computes exact Date-based start/end times for each period.
-- Exposes a schedule-aware countdown UI that can either sync to the device clock or operate independently as a manual sequence.
+- Exposes a schedule-aware countdown UI that can either sync to the device clock or operate independently as a manual sequence
 - Provides special Monday and Wednesday schedule variants per spec.
 - Contains a manual timer for arbitrary countdowns.
 - Displays a persistent clock at the bottom of the main view.
@@ -55,12 +55,10 @@ The app is a lightweight React 18 + Vite single-page app that:
 ## Features (detailed)
 
 - Rotation and Day 0:
-
   - Days 1–8 map to block labels (A–H) using the rotation defined in `src/utils/schedule.js`.
   - Day 0 is a special view: the six lettered blocks are titled `Period 1`, `Period 2`, ... `Period 6` instead of letters. Lab/Lunch/Morning Meeting names remain unchanged. Timing remains identical — only the displayed block names change.
 
 - Schedule construction and modes:
-
   - `buildDaySchedule(day, mode)` returns an ordered array of period objects: `{ type, name, start: Date, end: Date }`.
   - Modes supported:
     - `standard`: default schedule (50-minute blocks, 25-minute lab after 2nd block, 45-minute lunch after 4th block, 5-minute passing where appropriate).
@@ -68,13 +66,11 @@ The app is a lightweight React 18 + Vite single-page app that:
     - `wednesday`: blocks and Morning Meeting are 45 minutes; passing remains.
 
 - Sync behavior:
-
   - When "Sync to device time" is enabled the app derives the active period from the device clock and highlights it with a live countdown.
   - If `syncToClock` is true, the app automatically sets `scheduleMode` to `monday` on Mondays, `wednesday` on Wednesdays, and `standard` on other weekdays. The mode updates live as the `now` clock ticks (so mode will flip across midnight if necessary).
   - The sync toggle is disabled (and forced off) when the current device time is outside the computed school hours for the selected day/mode. A muted hint explains why the toggle is disabled.
 
 - Manual timer and presets:
-
   - Manual mode includes an editable dropdown (input + `datalist`) with common presets (10s, 30s, 1m, 5m, etc.) while still allowing typing (MM:SS, HH:MM:SS, or plain minutes).
   - Starting a manual timer triggers the same "Time is up!" overlay when it completes.
 
