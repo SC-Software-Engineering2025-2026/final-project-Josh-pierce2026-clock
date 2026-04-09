@@ -275,12 +275,21 @@ export function buildDaySchedule(
         pushPassing(passingMin);
       }
     } else if (i === 3 && lunchMode !== "lunch1") {
-      // lunch after 4th block (no passing) – only for Lunch 2
+      // Lunch 2: lunch after 4th block. For the standard
+      // schedule, lunch is 40 minutes (ending at 1:05 PM)
+      // followed by a 5-minute passing period so period 5
+      // begins at 1:10 PM. Other modes keep the original
+      // 45-minute lunch with no extra passing here.
       const s = new Date(cursor);
-      // Monday: lunch delayed 5 minutes effectively included in passing assumption above; we model lunch duration same but starting point handled by cursor
-      const e = addMinutes(s, 45);
+      const lunchMinutes = mode === "standard" ? 40 : 45;
+      const e = addMinutes(s, lunchMinutes);
       periods.push({ type: "lunch", name: "Lunch", start: s, end: e });
       cursor = new Date(e);
+      // Only standard-mode Lunch 2 gets a passing period
+      // after lunch (period 5 starts after this passing).
+      if (mode === "standard" && i !== blocks.length - 1) {
+        pushPassing(passingMin);
+      }
     }
 
     // after each block except after lab and lunch endpoints, add passing

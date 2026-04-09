@@ -15,10 +15,10 @@ The app is a lightweight React 18 + Vite single-page app that:
 ## Features (detailed)
 
 - 8-day rotation: Days 1–8 map to block labels (A–H). The rotation mapping is defined in `src/utils/schedule.js`.
-- Schedule construction: `buildDaySchedule(day, mode)` returns an ordered array of period objects: `{ type, name, start: Date, end: Date }`.
+- Schedule construction: `buildDaySchedule(day, mode, lunchMode)` returns an ordered array of period objects: `{ type, name, start: Date, end: Date }`.
 - Modes:
-  - `standard` — default schedule (50-minute blocks, 25-minute lab after 2nd block, 45-minute lunch after 4th block, 5-minute passing where applicable).
-  - `monday` — lab replaced by a 30-minute Morning Meeting; last block shortened by 5 minutes so the day ends on the same time; no additional post-meeting delay.
+  - `standard` — default schedule (50-minute blocks, lab after 2nd block, and for Lunch 2 a 40-minute lunch after 4th block ending at 1:05 PM with a 5-minute passing period until 1:10 PM before period 5; 5-minute passing where applicable).
+  - `monday` — lab replaced by a Morning Meeting; last block shortened by 5 minutes so the day ends on the same time; no additional post-meeting delay.
   - `wednesday` — blocks and Morning Meeting are 45 minutes; passing remains.
 - Sync toggle: when enabled the app computes the active period from the device clock and displays a live countdown for the active period. When disabled the schedule behaves as a manual sequencer: clicking a block starts a countdown for that block.
 - Safety: the sync toggle is disabled when the device time is outside the computed school hours for the selected day and mode (this prevents accidentally syncing to a non-school window).
