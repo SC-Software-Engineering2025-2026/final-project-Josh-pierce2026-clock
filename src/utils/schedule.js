@@ -275,29 +275,44 @@ export function buildDaySchedule(
         pushPassing(passingMin);
       }
     } else if (i === 3 && lunchMode !== "lunch1") {
-      // Lunch 2: lunch after 4th block. For the standard
-      // schedule, lunch is 40 minutes (ending at 1:05 PM)
-      // followed by a 5-minute passing period so period 5
-      // begins at 1:10 PM. Other modes keep the original
-      // 45-minute lunch with no extra passing here.
+      // Lunch 2: lunch after 4th block. For standard and Monday
+      // schedules, lunch is 40 minutes followed by a 5-minute
+      // passing period so period 5 begins at 1:15. Other modes
+      // keep the original 45-minute lunch with no extra passing here.
       const s = new Date(cursor);
-      const lunchMinutes = mode === "standard" ? 40 : 45;
+      const lunchMinutes = mode === "standard" || mode === "monday" ? 40 : 45;
       const e = addMinutes(s, lunchMinutes);
       periods.push({ type: "lunch", name: "Lunch", start: s, end: e });
       cursor = new Date(e);
-      // Only standard-mode Lunch 2 gets a passing period
-      // after lunch (period 5 starts after this passing).
-      if (mode === "standard" && i !== blocks.length - 1) {
+      // Standard and Monday Lunch 2 get a passing period after lunch
+      // so period 5 begins after the passing window.
+      if (
+        (mode === "standard" || mode === "monday") &&
+        i !== blocks.length - 1
+      ) {
         pushPassing(passingMin);
       }
     }
 
     // after each block except after lab and lunch endpoints, add passing
     if (i !== blocks.length - 1) {
-      // but if lab or lunch was added immediately after, we don't add
-      // an extra passing here (lab/lunch branches above already handled it)
-      if (i === 1 || i === 3) {
-        // already handled
+      // If lab (i===1) was just added, its branch already added passing.
+      // For i===3 (after block 4), previously the Lunch 2 branch handled
+      // adding lunch+passing; but when using Lunch 1 on standard days,
+      // the lunch was earlier and we still need a passing here between
+      // periods 4 and 5. Only skip adding a passing for i===3 when the
+      // lunch-after-4 (Lunch 2) branch already handled it (i.e. when
+      // lunchMode !== 'lunch1').
+      if (i === 1) {
+        // already handled by lab branch
+      } else if (i === 3) {
+        // If we're using the Lunch 1 variant on a standard day, we
+        // did not insert lunch here, so add the passing period.
+        if (mode === "standard" && lunchMode === "lunch1") {
+          pushPassing(passingMin);
+        }
+        // Otherwise (Lunch 2 or other modes) the branch above already
+        // added lunch and the passing, so do nothing here.
       } else {
         pushPassing(passingMin);
       }
