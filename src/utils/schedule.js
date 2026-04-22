@@ -275,19 +275,23 @@ export function buildDaySchedule(
         pushPassing(passingMin);
       }
     } else if (i === 3 && lunchMode !== "lunch1") {
-      // Lunch 2: lunch after 4th block. For standard and Monday
-      // schedules, lunch is 40 minutes followed by a 5-minute
-      // passing period so period 5 begins at 1:15. Other modes
-      // keep the original 45-minute lunch with no extra passing here.
+      // Lunch 2: lunch after 4th block. For standard, Monday, and
+      // Wednesday schedules, lunch is 40 minutes followed by a
+      // 5-minute passing period so period 5 begins at 1:15.
+      // Other modes keep the original 45-minute lunch with no
+      // extra passing here.
       const s = new Date(cursor);
-      const lunchMinutes = mode === "standard" || mode === "monday" ? 40 : 45;
+      const lunchMinutes =
+        mode === "standard" || mode === "monday" || mode === "wednesday"
+          ? 40
+          : 45;
       const e = addMinutes(s, lunchMinutes);
       periods.push({ type: "lunch", name: "Lunch", start: s, end: e });
       cursor = new Date(e);
-      // Standard and Monday Lunch 2 get a passing period after lunch
-      // so period 5 begins after the passing window.
+      // Standard, Monday, and Wednesday Lunch 2 get a passing period
+      // after lunch so period 5 begins after the passing window.
       if (
-        (mode === "standard" || mode === "monday") &&
+        (mode === "standard" || mode === "monday" || mode === "wednesday") &&
         i !== blocks.length - 1
       ) {
         pushPassing(passingMin);
